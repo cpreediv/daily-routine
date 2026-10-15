@@ -1,0 +1,335 @@
+﻿<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0, user-scalable=no">
+  <title>Full Focus Daily Routine</title>
+  
+  <!-- PWA & Mobile Settings -->
+  <meta name="theme-color" content="#0f172a">
+  <meta name="apple-mobile-web-app-capable" content="yes">
+  <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
+  <meta name="apple-mobile-web-app-title" content="Focus Daily">
+  <link rel="apple-touch-icon" href="https://fav.farm/⚡">
+  <link rel="icon" href="https://fav.farm/⚡">
+  
+  <!-- Embedded Web App Manifest -->
+  <link rel="manifest" href='data:application/manifest+json,{"name":"Full Focus Daily Routine","short_name":"Focus Daily","start_url":".","display":"standalone","background_color":"#0f172a","theme_color":"#0f172a","icons":[{"src":"https://fav.farm/⚡","sizes":"192x192","type":"image/png"}]}'>
+
+
+  <style>
+    :root {
+      --bg-color: #0f172a;
+      --card-bg: #1e293b;
+      --card-border: #334155;
+      --text-main: #f8fafc;
+      --text-muted: #94a3b8;
+      --accent: #38bdf8;
+      --accent-success: #34d399;
+      --accent-warning: #fbbf24;
+    }
+
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+      font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+      -webkit-tap-highlight-color: transparent;
+    }
+
+
+    body {
+      background-color: var(--bg-color);
+      color: var(--text-main);
+      padding: 1rem;
+      max-width: 600px;
+      margin: 0 auto;
+      padding-bottom: 3rem;
+    }
+
+
+    header {
+      margin-bottom: 1.5rem;
+      text-align: center;
+    }
+
+
+    h1 {
+      font-size: 1.5rem;
+      font-weight: 700;
+      margin-bottom: 0.25rem;
+    }
+
+
+    .date-bar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      margin-top: 0.75rem;
+      background: var(--card-bg);
+      padding: 0.5rem 0.75rem;
+      border-radius: 10px;
+      border: 1px solid var(--card-border);
+    }
+
+
+    .date-bar button {
+      background: transparent;
+      border: none;
+      color: var(--accent);
+      font-size: 1.2rem;
+      cursor: pointer;
+      padding: 0 0.5rem;
+    }
+
+
+    .date-display {
+      font-weight: 600;
+      font-size: 0.95rem;
+    }
+
+
+    .progress-container {
+      margin: 1.25rem 0;
+      background: var(--card-bg);
+      padding: 1rem;
+      border-radius: 12px;
+      border: 1px solid var(--card-border);
+    }
+
+
+    .progress-header {
+      display: flex;
+      justify-content: space-between;
+      font-size: 0.85rem;
+      color: var(--text-muted);
+      margin-bottom: 0.5rem;
+    }
+
+
+    .progress-bar-bg {
+      background: var(--card-border);
+      height: 10px;
+      border-radius: 5px;
+      overflow: hidden;
+    }
+
+
+    .progress-bar-fill {
+      background: linear-gradient(90deg, var(--accent), var(--accent-success));
+      height: 100%;
+      width: 0%;
+      transition: width 0.3s ease;
+    }
+
+
+    .phase-card {
+      background: var(--card-bg);
+      border: 1px solid var(--card-border);
+      border-radius: 12px;
+      margin-bottom: 1rem;
+      overflow: hidden;
+    }
+
+
+    .phase-title {
+      background: rgba(255, 255, 255, 0.03);
+      padding: 0.75rem 1rem;
+      font-size: 1rem;
+      font-weight: 700;
+      color: var(--accent);
+      border-bottom: 1px solid var(--card-border);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+
+    .item-row {
+      display: flex;
+      align-items: flex-start;
+      padding: 0.85rem 1rem;
+      border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+      cursor: pointer;
+      transition: background 0.15s ease;
+    }
+
+
+    .item-row:last-child {
+      border-bottom: none;
+    }
+
+
+    .item-row:active {
+      background: rgba(255, 255, 255, 0.05);
+    }
+
+
+    .checkbox {
+      width: 22px;
+      height: 22px;
+      border-radius: 6px;
+      border: 2px solid var(--text-muted);
+      margin-right: 0.75rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      margin-top: 2px;
+      transition: all 0.2s ease;
+    }
+
+
+    .checkbox svg {
+      display: none;
+      width: 14px;
+      height: 14px;
+      stroke: #0f172a;
+      stroke-width: 3;
+    }
+
+
+    .item-row.completed .checkbox {
+      background: var(--accent-success);
+      border-color: var(--accent-success);
+    }
+
+
+    .item-row.completed .checkbox svg {
+      display: block;
+    }
+
+
+    .item-text {
+      font-size: 0.95rem;
+      line-height: 1.4;
+      color: var(--text-main);
+    }
+
+
+    .item-row.completed .item-text {
+      text-decoration: line-through;
+      color: var(--text-muted);
+    }
+
+
+    .badge {
+      font-size: 0.75rem;
+      padding: 0.2rem 0.5rem;
+      border-radius: 4px;
+      background: rgba(56, 189, 248, 0.1);
+      color: var(--accent);
+    }
+
+
+    .reset-btn {
+      display: block;
+      width: 100%;
+      background: transparent;
+      border: 1px dashed var(--card-border);
+      color: var(--text-muted);
+      padding: 0.75rem;
+      border-radius: 10px;
+      font-size: 0.85rem;
+      cursor: pointer;
+      margin-top: 1.5rem;
+    }
+  </style>
+</head>
+<body>
+
+
+  <header>
+    <h1>Full Focus Routine</h1>
+    <div class="date-bar">
+      <button id="prevDate">&larr;</button>
+      <span class="date-display" id="dateDisplay">Today</span>
+      <button id="nextDate">&rarr;</button>
+    </div>
+  </header>
+
+
+  <div class="progress-container">
+    <div class="progress-header">
+      <span>Daily Completion</span>
+      <span id="progressText">0 / 0 (0%)</span>
+    </div>
+    <div class="progress-bar-bg">
+      <div class="progress-bar-fill" id="progressBar"></div>
+    </div>
+  </div>
+
+
+  <div id="routineContainer"></div>
+
+
+  <button class="reset-btn" id="resetBtn">Reset Today's Checklist</button>
+
+
+  <script>
+    const ROUTINES = [
+      {
+        phase: "Morning Startup",
+        items: [
+          "Wake up",
+          "Hydrate with a glass of water",
+          "Prepare coffee and read the Bible (20 min)",
+          "Attend morning prayer and praise with brothers",
+          "Attend daily Mass",
+          "Eat breakfast (20 min)",
+          "Engage in personal prayer (40 min)",
+          "Complete Hybrid Athlete workout (weightlifting, 90 min)",
+          "Take morning medications",
+          "Review calendar and schedule",
+          "Establish Daily Big 3 priorities"
+        ]
+      },
+      {
+        phase: "Workday Shutdown",
+        items: [
+          "Review inbox; snooze messages to 8:00 AM tomorrow",
+          "Audit Google Chats and text messages for urgent items",
+          "Clean and reset desk workspace",
+          "Hard Stop at 4:30 PM"
+        ]
+      },
+      {
+        phase: "Intermission",
+        items: [
+          "Go on Rosary walk"
+        ]
+      },
+      {
+        phase: "Evening Ritual",
+        items: [
+          "Review tomorrow's schedule, workout time, and meals",
+          "Take evening medications",
+          "Play chess (20 min)",
+          "Read fiction to unwind",
+          "Prepare for restorative sleep"
+        ]
+      }
+    ];
+
+
+    let currentDate = new Date();
+
+
+    function getDateKey(date) {
+      return date.toISOString().split('T')[0];
+    }
+
+
+    function formatDateDisplay(date) {
+      const today = new Date();
+      if (getDateKey(date) === getDateKey(today)) return "Today";
+      
+      const yesterday = new Date(today);
+      yesterday.setDate(today.getDate() - 1);
+      if (getDateKey(date) === getDateKey(yesterday)) return "Yesterday";
+
+
+      const tomorrow = new Date(today);
+      tomorrow.setDate(today.getDate() + 1);
+      if (getDateKey(date) === getDateKey(tomorrow)) return "Tomorrow";
